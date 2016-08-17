@@ -152,24 +152,31 @@ public class RentableClaim extends GPClaim {
 
     public String prettyTime(int seconds) {
         if (seconds < 60)
-            return seconds + " secs";
+            return plural(seconds, "sec");
 
         int minutes = seconds / 60;
 
         if (minutes < 60)
-            return minutes + " mins";
+            return plural(minutes, "min");
 
         int hours = minutes / 60;
 
         if (hours < 24)
-            return hours + " hours";
+            return plural(hours, "hour");
 
         int days = hours / 24;
 
         if (days < 356)
-            return days + " days";
+            return plural(days, "day");
 
         int years = days / 356;
-        return years + " years";
+        return plural(years, "year");
+    }
+
+    public String plural(int time, String suffix) {
+        if (time == 1)
+            return time + " " + suffix;
+
+        return time + " " + suffix + "s";
     }
 }
