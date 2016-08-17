@@ -43,19 +43,15 @@ public class BlockEventHandler {
 
                         if (!rentableClaim.isRented()) {
                             rentableClaim.addRenter(player.getUniqueId(), player.getName());
-                            player.sendMessage(Text.of(TextColors.GREEN, "You have rented " + rentableClaim.getName()));
+                            player.sendMessage(Text.of(TextColors.GREEN, "You have rented " + rentableClaim.getName() + " for " + rentableClaim.getPrice()));
                         } else {
-                            player.sendMessage(Text.of(TextColors.AQUA, rentableClaim.getName() + " is currently rented by " + rentableClaim.getRenter().get()));
+                            player.sendMessage(Text.of(TextColors.AQUA, rentableClaim.getName() + " is currently rented by " + rentableClaim.getRenterName().get()));
                         }
                     } else {
-                        GPRent.instance.logger.error("Sign has rent data but there is no rentable claim. Claim ID: " + uuid);
+                        GPRent.instance.logger.error("Sign has rent data but there is no rentable claim, removing rent data from sign. Claim ID: " + uuid);
+                        sign.remove(RentData.class);
                     }
-                } else {
-                    player.sendMessage(Text.of("no rent data"));
                 }
-            } else {
-
-                player.sendMessage(Text.of("not sign"));
             }
         }
     }
