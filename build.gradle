@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'me.nentify.gprent'
-version = '0.0.1'
+version = '1.0.0'
 description = 'Rent GriefPrevention claims'
 
 repositories {
