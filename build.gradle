@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:5.0.0-SNAPSHOT'
-    compile 'com.zaxxer:HikariCP:2.4.3'
 
     compile files('./libs/griefprevention-1.10.2-2.1.0.62.jar')
 }
