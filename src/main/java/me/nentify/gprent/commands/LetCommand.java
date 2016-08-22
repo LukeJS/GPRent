@@ -2,9 +2,11 @@ package me.nentify.gprent.commands;
 
 import me.nentify.gprent.GPRent;
 import me.nentify.gprent.claims.RentableClaim;
+import me.nentify.gprent.claims.RentableClaimFactory;
 import me.nentify.gprent.data.rent.RentData;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.claim.Claim;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -29,7 +31,7 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
-public class CreateRentCommand implements CommandExecutor {
+public class LetCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -49,12 +51,7 @@ public class CreateRentCommand implements CommandExecutor {
 
             if (hitOptional.isPresent()) {
                 BlockRayHit<World> hit = hitOptional.get();
-
                 Location<World> blockLoc = hit.getLocation();
-
-                player.sendMessage(Text.of(TextColors.AQUA, blockLoc.getBlock().getName()));
-                player.sendMessage(Text.of(TextColors.YELLOW, blockLoc.getBlock().getType()));
-
                 Optional<TileEntity> tileEntity = blockLoc.getTileEntity();
 
                 if (tileEntity.isPresent() && tileEntity.get() instanceof Sign) {
@@ -62,10 +59,10 @@ public class CreateRentCommand implements CommandExecutor {
                     Claim claim = GriefPrevention.instance.dataStore.getClaimAtPlayer(player, true);
 
                     if (!claim.isWildernessClaim()) {
-                        RentableClaim rentableClaim = new RentableClaim(claim, blockLoc, name, price, duration);
-                        GPRent.instance.getRentableClaims().add(rentableClaim);
+                        RentableClaim rentableClaim = RentableClaimFactory.createRentableClaim(claim, blockLoc, name, price, duration, sign);
+                        rentableClaim.saveConfig();
 
-                        sign.offer(new RentData(claim.getID().toString()));
+                        player.sendMessage(Text.of(TextColors.GREEN, "Successfully let plot " + name));
                     } else {
                         player.sendMessage(Text.of(TextColors.RED, "You are not standing in a claim"));
                     }

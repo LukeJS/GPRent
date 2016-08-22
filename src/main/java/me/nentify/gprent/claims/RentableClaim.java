@@ -1,8 +1,11 @@
 package me.nentify.gprent.claims;
 
+import com.google.common.reflect.TypeToken;
 import me.nentify.gprent.GPRent;
 import me.nentify.gprent.Utils;
 import me.ryanhamshire.griefprevention.claim.Claim;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
@@ -23,18 +26,45 @@ public class RentableClaim extends GPClaim {
     private int price;
     private int duration;
 
-    private Optional<UUID> renter = Optional.empty();
-    private Optional<String> renterName = Optional.empty();
-    private Optional<Integer> rentedAt = Optional.empty();
+    private UUID renter;
+    private String renterName;
+    private int rentedAt;
 
-    public RentableClaim(Claim claim, Location<World> signLocation, String name, int price, int duration) {
+    private CommentedConfigurationNode configNode;
+
+    public RentableClaim(Claim claim,
+                         Location<World> signLocation,
+                         String name,
+                         int price,
+                         int duration,
+                         CommentedConfigurationNode configNode) {
+        this(claim, signLocation, name, price, duration, configNode, null, null, -1);
+    }
+
+    public RentableClaim(Claim claim,
+                         Location<World> signLocation,
+                         String name,
+                         int price,
+                         int duration,
+                         CommentedConfigurationNode configNode,
+                         UUID renter,
+                         String renterName,
+                         int rentedAt) {
         super(claim);
+
+        this.signLocation = signLocation;
 
         this.name = name;
         this.price = price;
         this.duration = duration;
 
         this.signLocation = signLocation;
+
+        this.renter = renter;
+        this.renterName = renterName;
+        this.rentedAt = rentedAt;
+
+        this.configNode = configNode;
 
         updateSign();
     }
@@ -67,15 +97,18 @@ public class RentableClaim extends GPClaim {
     }
 
     public Optional<UUID> getRenter() {
-        return renter;
+        if (isRented())
+            return Optional.of(renter);
+
+        return Optional.empty();
     }
 
-    public void addRenter(UUID renter, String renterName) {
+    public void setRenter(UUID renter, String renterName) {
         addManager(renter);
 
-        this.renter = Optional.of(renter);
-        this.renterName = Optional.of(renterName);
-        this.rentedAt = Optional.of(Utils.getCurrentUnixTimestamp());
+        this.renter = renter;
+        this.renterName = renterName;
+        this.rentedAt = Utils.getCurrentUnixTimestamp();
 
         updateSign();
     }
@@ -83,18 +116,28 @@ public class RentableClaim extends GPClaim {
     public void removeRenter() {
         clearAllTrust();
 
-        this.renter = Optional.empty();
-        this.rentedAt = Optional.empty();
+        this.renter = null;
+        this.rentedAt = -1;
 
         updateSign();
     }
 
     public boolean isRented() {
-        return renter.isPresent();
+        return renter != null;
     }
 
     public Optional<String> getRenterName() {
-        return renterName;
+        if (isRented())
+            return Optional.of(renterName);
+
+        return Optional.empty();
+    }
+
+    public Optional<Integer> getRentedAt() {
+        if (isRented())
+            return Optional.of(rentedAt);
+
+        return Optional.empty();
     }
 
     public boolean hasExpired() {
@@ -106,7 +149,7 @@ public class RentableClaim extends GPClaim {
 
     public Optional<Integer> getRemainingTime() {
         if (isRented())
-            return Optional.of(duration - (Utils.getCurrentUnixTimestamp() - rentedAt.get()));
+            return Optional.of(duration - (Utils.getCurrentUnixTimestamp() - rentedAt));
 
         return Optional.empty();
     }
@@ -178,5 +221,36 @@ public class RentableClaim extends GPClaim {
             return time + " " + suffix;
 
         return time + " " + suffix + "s";
+    }
+
+    public void saveConfig() {
+        try {
+            configNode.getNode("claimWorld").setValue(TypeToken.of(UUID.class), getWorld().getUniqueId());
+
+            configNode.getNode("name").setValue(name);
+            configNode.getNode("price").setValue(price);
+            configNode.getNode("duration").setValue(duration);
+
+            configNode.getNode("renter").setValue(getRenter().orElse(null));
+            configNode.getNode("renterName").setValue(getRenterName().orElse(null));
+            configNode.getNode("rentedAt").setValue(getRentedAt().orElse(null));
+
+            CommentedConfigurationNode signLocationNode = configNode.getNode("signLocation");
+
+            signLocationNode.getNode("world").setValue(TypeToken.of(UUID.class), signLocation.getExtent().getUniqueId());
+            signLocationNode.getNode("x").setValue(signLocation.getX());
+            signLocationNode.getNode("y").setValue(signLocation.getY());
+            signLocationNode.getNode("z").setValue(signLocation.getZ());
+
+            GPRent.instance.saveConfig();
+        } catch (ObjectMappingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete() {
+        GPRent.instance.getRentableClaims().remove(this);
+        configNode.setValue(null);
+        GPRent.instance.saveConfig();
     }
 }

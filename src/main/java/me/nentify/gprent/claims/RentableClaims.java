@@ -19,15 +19,20 @@ public class RentableClaims {
     }
 
     /**
+     *
+     *
      * Add a RentableClaim
      * @param rentableClaim The RentableClaim
      */
     public void add(RentableClaim rentableClaim) {
-        if (!rentableClaims.containsKey(rentableClaim.getClaimId()))
-            rentableClaims.put(rentableClaim.getClaimId(), rentableClaim);
+        rentableClaims.put(rentableClaim.getClaimId(), rentableClaim);
     }
 
     public Collection<RentableClaim> all() {
         return rentableClaims.values();
+    }
+
+    public void remove(RentableClaim rentableClaim) {
+        rentableClaims.remove(rentableClaim);
     }
 }

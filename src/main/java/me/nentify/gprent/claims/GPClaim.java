@@ -1,6 +1,7 @@
 package me.nentify.gprent.claims;
 
 import me.ryanhamshire.griefprevention.claim.Claim;
+import org.spongepowered.api.world.World;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,10 @@ public class GPClaim {
 
     public UUID getClaimId() {
         return claim.getID();
+    }
+
+    public World getWorld() {
+        return claim.world;
     }
 
     /**
