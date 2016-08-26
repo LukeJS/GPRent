@@ -3,8 +3,6 @@ package me.nentify.gprent.commands;
 import me.nentify.gprent.GPRent;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.claim.Claim;
-import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,10 +11,6 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.blockray.BlockRayHit;
-import org.spongepowered.api.world.extent.Extent;
-
-import java.util.function.Predicate;
 
 public class LetCommand implements CommandExecutor {
 
@@ -37,7 +31,7 @@ public class LetCommand implements CommandExecutor {
             }
 
             if (!claim.isWildernessClaim()) {
-                LetCommandData letCommandData = new LetCommandData(claim, name, price, duration);
+                Data letCommandData = new Data(claim, name, price, duration);
                 GPRent.addLetcommandData(player.getUniqueId(), letCommandData);
 
                 player.sendMessage(Text.of(TextColors.YELLOW, "Right click the sign you would like to display the rent data on"));
@@ -51,13 +45,13 @@ public class LetCommand implements CommandExecutor {
         return CommandResult.success();
     }
 
-    public static class LetCommandData {
+    public static class Data {
         public final Claim claim;
         public final String name;
         public final double price;
         public final int duration;
 
-        public LetCommandData(Claim claim, String name, double price, int duration) {
+        public Data(Claim claim, String name, double price, int duration) {
             this.claim = claim;
             this.name = name;
             this.price = price;

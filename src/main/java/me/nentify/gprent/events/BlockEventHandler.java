@@ -82,10 +82,10 @@ public class BlockEventHandler {
                         sign.remove(RentData.class);
                     }
                 } else {
-                    Optional<LetCommand.LetCommandData> letCommandDataOptional = GPRent.takePlayerShopData(player.getUniqueId());
+                    Optional<LetCommand.Data> letCommandDataOptional = GPRent.takePlayerShopData(player.getUniqueId());
 
                     if (letCommandDataOptional.isPresent()) {
-                        LetCommand.LetCommandData letCommandData = letCommandDataOptional.get();
+                        LetCommand.Data letCommandData = letCommandDataOptional.get();
 
                         Claim claim = letCommandData.claim;
                         String name = letCommandData.name;

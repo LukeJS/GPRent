@@ -67,7 +67,7 @@ public class GPRent {
     public EconomyService economyService;
 
     // Stores rent data after a player uses the /gprent command to be later put on to a sign placed by the player
-    public static Map<UUID, LetCommand.LetCommandData> letCommandData = new HashMap<>();
+    public static Map<UUID, LetCommand.Data> letCommandData = new HashMap<>();
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -213,13 +213,13 @@ public class GPRent {
         }
     }
 
-    public static void addLetcommandData(UUID uuid, LetCommand.LetCommandData data) {
+    public static void addLetcommandData(UUID uuid, LetCommand.Data data) {
         letCommandData.put(uuid, data);
     }
 
-    public static Optional<LetCommand.LetCommandData> takePlayerShopData(UUID uuid) {
+    public static Optional<LetCommand.Data> takePlayerShopData(UUID uuid) {
         if (letCommandData.containsKey(uuid)) {
-            LetCommand.LetCommandData data = letCommandData.get(uuid);
+            LetCommand.Data data = letCommandData.get(uuid);
             letCommandData.remove(uuid);
             return Optional.of(data);
         }
