@@ -9,7 +9,6 @@ import me.nentify.gprent.data.rent.ImmutableRentData;
 import me.nentify.gprent.data.rent.RentData;
 import me.nentify.gprent.data.rent.RentDataManipulatorBuilder;
 import me.nentify.gprent.events.BlockEventHandler;
-import me.nentify.gprent.events.PlayerEventHandler;
 import me.nentify.gprent.tasks.RentCheckerTask;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.claim.Claim;
@@ -91,7 +90,6 @@ public class GPRent {
 
         Sponge.getDataManager().register(RentData.class, ImmutableRentData.class, new RentDataManipulatorBuilder());
 
-        Sponge.getGame().getEventManager().registerListeners(this, new PlayerEventHandler());
         Sponge.getGame().getEventManager().registerListeners(this, new BlockEventHandler());
 
         Task task = Sponge.getScheduler().createTaskBuilder()
@@ -110,8 +108,6 @@ public class GPRent {
             e.printStackTrace();
         }
     }
-
-    // check rents for invalid entries
 
     public RentableClaims getRentableClaims() {
         return rentableClaims;
