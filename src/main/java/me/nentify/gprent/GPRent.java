@@ -67,8 +67,6 @@ public class GPRent {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
-        logger.info("Starting " + PLUGIN_NAME + " v" + PLUGIN_VERSION);
-
         instance = this;
 
         try {
