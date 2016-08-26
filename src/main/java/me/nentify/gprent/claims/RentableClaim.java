@@ -23,7 +23,7 @@ public class RentableClaim extends GPClaim {
     private Location<World> signLocation;
 
     private String name;
-    private int price;
+    private double price;
     private int duration;
 
     private UUID renter;
@@ -32,24 +32,11 @@ public class RentableClaim extends GPClaim {
 
     private CommentedConfigurationNode configNode;
 
-    public RentableClaim(Claim claim,
-                         Location<World> signLocation,
-                         String name,
-                         int price,
-                         int duration,
-                         CommentedConfigurationNode configNode) {
+    public RentableClaim(Claim claim, Location<World> signLocation, String name, double price, int duration, CommentedConfigurationNode configNode) {
         this(claim, signLocation, name, price, duration, configNode, null, null, -1);
     }
 
-    public RentableClaim(Claim claim,
-                         Location<World> signLocation,
-                         String name,
-                         int price,
-                         int duration,
-                         CommentedConfigurationNode configNode,
-                         UUID renter,
-                         String renterName,
-                         int rentedAt) {
+    public RentableClaim(Claim claim, Location<World> signLocation, String name, double price, int duration, CommentedConfigurationNode configNode, UUID renter, String renterName, int rentedAt) {
         super(claim);
 
         this.signLocation = signLocation;
@@ -78,11 +65,11 @@ public class RentableClaim extends GPClaim {
         updateSign();
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
         updateSign();
     }
@@ -249,7 +236,7 @@ public class RentableClaim extends GPClaim {
     }
 
     public void delete() {
-        GPRent.instance.getRentableClaims().remove(this);
+        GPRent.getRentableClaims().remove(this);
         configNode.setValue(null);
         GPRent.instance.saveConfig();
     }

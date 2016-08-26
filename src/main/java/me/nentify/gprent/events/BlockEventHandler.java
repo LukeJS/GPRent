@@ -2,7 +2,10 @@ package me.nentify.gprent.events;
 
 import me.nentify.gprent.GPRent;
 import me.nentify.gprent.claims.RentableClaim;
+import me.nentify.gprent.commands.LetCommand;
 import me.nentify.gprent.data.rent.RentData;
+import me.ryanhamshire.griefprevention.claim.Claim;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
@@ -51,12 +54,13 @@ public class BlockEventHandler {
                         RentableClaim rentableClaim = rentableClaimOptional.get();
 
                         if (!rentableClaim.isRented()) {
-                            int price = rentableClaim.getPrice();
+                            double price = rentableClaim.getPrice();
 
                             Optional<UniqueAccount> account = GPRent.instance.economyService.getOrCreateAccount(player.getUniqueId());
 
                             if (account.isPresent()) {
-                                TransactionResult result = account.get().withdraw(GPRent.instance.economyService.getDefaultCurrency(),
+                                TransactionResult result = account.get().withdraw(
+                                        GPRent.instance.economyService.getDefaultCurrency(),
                                         BigDecimal.valueOf(price),
                                         Cause.source(GPRent.instance).build());
 
@@ -75,6 +79,27 @@ public class BlockEventHandler {
                     } else {
                         GPRent.instance.logger.error("Sign has rent data but there is no rentable claim, removing rent data from sign. Claim ID: " + uuid);
                         sign.remove(RentData.class);
+                    }
+                } else {
+                    Optional<LetCommand.LetCommandData> letCommandDataOptional = GPRent.takePlayerShopData(player.getUniqueId());
+
+                    if (letCommandDataOptional.isPresent()) {
+                        LetCommand.LetCommandData letCommandData = letCommandDataOptional.get();
+
+                        Claim claim = letCommandData.claim;
+                        String name = letCommandData.name;
+                        double price = letCommandData.price;
+                        int duration = letCommandData.duration;
+
+                        Location<World> signLocation = blockLoc.get();
+                        CommentedConfigurationNode configNode = GPRent.instance.getRentsConfig().getNode(claim.getID().toString());
+
+                        RentableClaim rentableClaim = new RentableClaim(claim, signLocation, name, price, duration, configNode);
+                        GPRent.getRentableClaims().add(rentableClaim);
+
+                        sign.offer(new RentData(claim.getID().toString()));
+
+                        player.sendMessage(Text.of(TextColors.GREEN, "Successfully let plot ", name));
                     }
                 }
             }
@@ -101,7 +126,7 @@ public class BlockEventHandler {
 
                         UUID uuid = UUID.fromString(rentData.claimId().get());
 
-                        Optional<RentableClaim> rentableClaimOptional = GPRent.instance.getRentableClaims().get(uuid);
+                        Optional<RentableClaim> rentableClaimOptional = GPRent.getRentableClaims().get(uuid);
 
                         if (rentableClaimOptional.isPresent()) {
                             RentableClaim rentableClaim = rentableClaimOptional.get();

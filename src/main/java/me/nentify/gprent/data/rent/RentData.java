@@ -1,6 +1,7 @@
 package me.nentify.gprent.data.rent;
 
 import com.google.common.base.Objects;
+import me.nentify.gprent.data.GPRentKeys;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
@@ -23,14 +24,14 @@ public class RentData extends AbstractData<RentData, ImmutableRentData> {
     }
 
     public Value<String> claimId() {
-        return Sponge.getRegistry().getValueFactory().createValue(RentKeys.CLAIM_ID, claimId);
+        return Sponge.getRegistry().getValueFactory().createValue(GPRentKeys.CLAIM_ID, claimId);
     }
 
     @Override
     protected void registerGettersAndSetters() {
-        registerFieldGetter(RentKeys.CLAIM_ID, () -> claimId);
-        registerFieldSetter(RentKeys.CLAIM_ID, value -> claimId = value);
-        registerKeyValue(RentKeys.CLAIM_ID, this::claimId);
+        registerFieldGetter(GPRentKeys.CLAIM_ID, () -> claimId);
+        registerFieldSetter(GPRentKeys.CLAIM_ID, value -> claimId = value);
+        registerKeyValue(GPRentKeys.CLAIM_ID, this::claimId);
     }
 
     @Override
@@ -40,10 +41,10 @@ public class RentData extends AbstractData<RentData, ImmutableRentData> {
 
     @Override
     public Optional<RentData> from(DataContainer container) {
-        if (!container.contains(RentKeys.CLAIM_ID.getQuery()))
+        if (!container.contains(GPRentKeys.CLAIM_ID.getQuery()))
             return Optional.empty();
 
-        this.claimId = container.getString(RentKeys.CLAIM_ID.getQuery()).get();
+        this.claimId = container.getString(GPRentKeys.CLAIM_ID.getQuery()).get();
 
         return Optional.of(this);
     }
@@ -71,7 +72,7 @@ public class RentData extends AbstractData<RentData, ImmutableRentData> {
     @Override
     public DataContainer toContainer() {
         return super.toContainer()
-                .set(RentKeys.CLAIM_ID, claimId);
+                .set(GPRentKeys.CLAIM_ID, claimId);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.nentify.gprent.data.rent;
 
+import me.nentify.gprent.data.GPRentKeys;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
@@ -21,8 +22,8 @@ public class RentDataManipulatorBuilder implements DataManipulatorBuilder<RentDa
 
     @Override
     public Optional<RentData> build(DataView container) throws InvalidDataException {
-        if (container.contains(RentKeys.CLAIM_ID)) {
-            String claimId = container.getString(RentKeys.CLAIM_ID.getQuery()).get();
+        if (container.contains(GPRentKeys.CLAIM_ID)) {
+            String claimId = container.getString(GPRentKeys.CLAIM_ID.getQuery()).get();
             return Optional.of(new RentData(claimId));
         }
 

@@ -1,5 +1,6 @@
 package me.nentify.gprent.data.rent;
 
+import me.nentify.gprent.data.GPRentKeys;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
@@ -18,13 +19,13 @@ public class ImmutableRentData extends AbstractImmutableData<ImmutableRentData, 
     }
 
     public ImmutableValue<String> claimId() {
-        return Sponge.getRegistry().getValueFactory().createValue(RentKeys.CLAIM_ID, claimId).asImmutable();
+        return Sponge.getRegistry().getValueFactory().createValue(GPRentKeys.CLAIM_ID, claimId).asImmutable();
     }
 
     @Override
     protected void registerGetters() {
-        registerFieldGetter(RentKeys.CLAIM_ID, () -> claimId);
-        registerKeyValue(RentKeys.CLAIM_ID, this::claimId);
+        registerFieldGetter(GPRentKeys.CLAIM_ID, () -> claimId);
+        registerKeyValue(GPRentKeys.CLAIM_ID, this::claimId);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class ImmutableRentData extends AbstractImmutableData<ImmutableRentData, 
     @Override
     public DataContainer toContainer() {
         return super.toContainer()
-                .set(RentKeys.CLAIM_ID, claimId);
+                .set(GPRentKeys.CLAIM_ID, claimId);
     }
 
     @Override

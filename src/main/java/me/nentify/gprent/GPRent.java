@@ -2,7 +2,7 @@ package me.nentify.gprent;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import me.nentify.gprent.claims.RentableClaimFactory;
+import me.nentify.gprent.claims.RentableClaim;
 import me.nentify.gprent.claims.RentableClaims;
 import me.nentify.gprent.commands.LetCommand;
 import me.nentify.gprent.data.rent.ImmutableRentData;
@@ -35,6 +35,7 @@ import org.spongepowered.api.world.World;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,9 +61,12 @@ public class GPRent {
     private ConfigurationLoader<CommentedConfigurationNode> rentsLoader;
     private CommentedConfigurationNode rentsConfig;
 
-    private RentableClaims rentableClaims = new RentableClaims();
+    private static RentableClaims rentableClaims = new RentableClaims();
 
     public EconomyService economyService;
+
+    // Stores rent data after a player uses the /gprent command to be later put on to a sign placed by the player
+    public static Map<UUID, LetCommand.LetCommandData> letCommandData = new HashMap<>();
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -75,11 +79,13 @@ public class GPRent {
             e.printStackTrace();
         }
 
+        // Make this /gp let|sell
+
         CommandSpec letCommand = CommandSpec.builder()
                 .description(Text.of("Put the region you're standing in up for rent"))
                 .permission("gprent.let")
                 .arguments(
-                        GenericArguments.integer(Text.of("price")),
+                        GenericArguments.doubleNum(Text.of("price")),
                         GenericArguments.integer(Text.of("duration")),
                         GenericArguments.remainingJoinedStrings(Text.of("name"))
                 )
@@ -109,7 +115,7 @@ public class GPRent {
         }
     }
 
-    public RentableClaims getRentableClaims() {
+    public static RentableClaims getRentableClaims() {
         return rentableClaims;
     }
 
@@ -134,7 +140,7 @@ public class GPRent {
             UUID claimWorldId = node.getNode("claimWorld").getValue(TypeToken.of(UUID.class));
 
             String name = node.getNode("name").getString();
-            int price = node.getNode("price").getInt();
+            double price = node.getNode("price").getDouble();
             int duration = node.getNode("duration").getInt();
 
             Optional<World> claimWorld = Sponge.getServer().getWorld(claimWorldId);
@@ -167,16 +173,11 @@ public class GPRent {
                     Claim claim = GriefPrevention.instance.dataStore.getClaim(claimWorld.get().getProperties(), claimId);
 
                     if (claim != null) {
-                        RentableClaimFactory.loadRentableClaim(claim,
-                                signLocation,
-                                name,
-                                price,
-                                duration,
-                                renter,
-                                renterName,
-                                rentedAt);
+                        RentableClaim rentableClaim = new RentableClaim(claim, signLocation, name, price, duration, rentsConfig.getNode(claim.getID().toString()), renter, renterName, rentedAt);
+                        rentableClaims.add(rentableClaim);
                     } else {
                         logger.error("Failed to find claim with UUID: " + claimId);
+                        node.setValue(null); // I think this might delete the node?
                     }
                 } else {
                     logger.error("Could not find world with UUID " + worldUuid + " for sign location " + name + " with claim ID " + claimId);
@@ -209,5 +210,19 @@ public class GPRent {
         if (event.getService().equals(EconomyService.class)) {
             economyService = (EconomyService) event.getNewProviderRegistration().getProvider();
         }
+    }
+
+    public static void addLetcommandData(UUID uuid, LetCommand.LetCommandData data) {
+        letCommandData.put(uuid, data);
+    }
+
+    public static Optional<LetCommand.LetCommandData> takePlayerShopData(UUID uuid) {
+        if (letCommandData.containsKey(uuid)) {
+            LetCommand.LetCommandData data = letCommandData.get(uuid);
+            letCommandData.remove(uuid);
+            return Optional.of(data);
+        }
+
+        return Optional.empty();
     }
 }
