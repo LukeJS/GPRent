@@ -173,14 +173,18 @@ public class GPRent {
 
                     Claim claim = GriefPrevention.instance.dataStore.getClaim(claimWorld.get().getProperties(), claimId);
 
-                    RentableClaimFactory.loadRentableClaim(claim,
-                            signLocation,
-                            name,
-                            price,
-                            duration,
-                            renter,
-                            renterName,
-                            rentedAt);
+                    if (claim != null) {
+                        RentableClaimFactory.loadRentableClaim(claim,
+                                signLocation,
+                                name,
+                                price,
+                                duration,
+                                renter,
+                                renterName,
+                                rentedAt);
+                    } else {
+                        logger.error("Failed to find claim with UUID: " + claimId);
+                    }
                 } else {
                     logger.error("Could not find world with UUID " + worldUuid + " for sign location " + name + " with claim ID " + claimId);
                 }

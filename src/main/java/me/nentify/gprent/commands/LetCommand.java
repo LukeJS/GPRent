@@ -21,15 +21,18 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.data.manipulator.mutable.entity.HealthData;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.ItemStackComparators;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.extent.Extent;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class LetCommand implements CommandExecutor {
 
@@ -44,7 +47,7 @@ public class LetCommand implements CommandExecutor {
 
             BlockRay<World> blockRay = BlockRay.from(player)
                     .blockLimit(100)
-                    .filter(BlockRay.continueAfterFilter(BlockRay.onlyAirFilter(), 1))
+                    .filter(signFilter())
                     .build();
 
             Optional<BlockRayHit<World>> hitOptional = blockRay.end();
@@ -77,5 +80,13 @@ public class LetCommand implements CommandExecutor {
         }
 
         return CommandResult.success();
+    }
+
+    public static <E extends Extent> Predicate<BlockRayHit<E>> signFilter() {
+        return lastHit -> isSign(lastHit.getExtent().getBlockType(lastHit.getBlockX(), lastHit.getBlockY(), lastHit.getBlockZ()));
+    }
+
+    public static boolean isSign(BlockType type) {
+        return type == BlockTypes.STANDING_SIGN || type == BlockTypes.WALL_SIGN;
     }
 }
