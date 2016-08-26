@@ -41,12 +41,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = GPRent.PLUGIN_ID, name = GPRent.PLUGIN_NAME, version = GPRent.PLUGIN_VERSION)
+@Plugin(id = GPRent.PLUGIN_ID, name = GPRent.PLUGIN_NAME)
 public class GPRent {
 
     public static final String PLUGIN_ID = "gprent";
     public static final String PLUGIN_NAME = "GPRent";
-    public static final String PLUGIN_VERSION = "1.0.0";
 
     public static GPRent instance;
 
