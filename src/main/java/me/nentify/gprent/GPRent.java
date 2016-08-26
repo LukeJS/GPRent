@@ -12,6 +12,7 @@ import me.nentify.gprent.events.BlockEventHandler;
 import me.nentify.gprent.tasks.RentCheckerTask;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.claim.Claim;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -59,7 +60,7 @@ public class GPRent {
     private Path rentsFile;
 
     private ConfigurationLoader<CommentedConfigurationNode> rentsLoader;
-    private CommentedConfigurationNode rentsConfig;
+    private ConfigurationNode rentsConfig;
 
     private static RentableClaims rentableClaims = new RentableClaims();
 
@@ -133,8 +134,8 @@ public class GPRent {
     }
 
     private void loadRentableClaims() throws ObjectMappingException {
-        for (Map.Entry<Object, ? extends CommentedConfigurationNode> entry : rentsConfig.getChildrenMap().entrySet()) {
-            CommentedConfigurationNode node = entry.getValue();
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : rentsConfig.getChildrenMap().entrySet()) {
+            ConfigurationNode node = entry.getValue();
 
             UUID claimId = UUID.fromString((String) entry.getKey());
             UUID claimWorldId = node.getNode("claimWorld").getValue(TypeToken.of(UUID.class));
@@ -146,7 +147,7 @@ public class GPRent {
             Optional<World> claimWorld = Sponge.getServer().getWorld(claimWorldId);
 
             if (claimWorld.isPresent()) {
-                CommentedConfigurationNode renterNode = node.getNode("renter");
+                ConfigurationNode renterNode = node.getNode("renter");
 
                 UUID renter = null;
                 String renterName = null;
@@ -158,7 +159,7 @@ public class GPRent {
                     rentedAt = node.getNode("rentedAt").getInt();
                 }
 
-                CommentedConfigurationNode signLocationNode = node.getNode("signLocation");
+                ConfigurationNode signLocationNode = node.getNode("signLocation");
 
                 UUID worldUuid = signLocationNode.getNode("world").getValue(TypeToken.of(UUID.class));
                 Optional<World> world = Sponge.getServer().getWorld(worldUuid);
@@ -177,7 +178,7 @@ public class GPRent {
                         rentableClaims.add(rentableClaim);
                     } else {
                         logger.error("Failed to find claim with UUID: " + claimId);
-                        node.setValue(null); // I think this might delete the node?
+                        getRentsConfig().removeChild(claimId.toString());
                     }
                 } else {
                     logger.error("Could not find world with UUID " + worldUuid + " for sign location " + name + " with claim ID " + claimId);
@@ -193,7 +194,7 @@ public class GPRent {
         return rentsLoader;
     }
 
-    public CommentedConfigurationNode getRentsConfig() {
+    public ConfigurationNode getRentsConfig() {
         return rentsConfig;
     }
 

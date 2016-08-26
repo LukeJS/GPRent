@@ -33,6 +33,11 @@ public class RentableClaims {
     }
 
     public void remove(RentableClaim rentableClaim) {
-        rentableClaims.remove(rentableClaim);
+        if (rentableClaims.containsKey(rentableClaim.getClaimId()))
+            rentableClaims.remove(rentableClaim.getClaimId());
+    }
+
+    public boolean has(UUID claimUuid) {
+        return rentableClaims.containsKey(claimUuid);
     }
 }

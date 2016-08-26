@@ -31,6 +31,11 @@ public class LetCommand implements CommandExecutor {
 
             Claim claim = GriefPrevention.instance.dataStore.getClaimAtPlayer(player, true);
 
+            if (GPRent.getRentableClaims().has(claim.getID())) {
+                player.sendMessage(Text.of(TextColors.RED, "This claim is already for rent"));
+                return CommandResult.success();
+            }
+
             if (!claim.isWildernessClaim()) {
                 LetCommandData letCommandData = new LetCommandData(claim, name, price, duration);
                 GPRent.addLetcommandData(player.getUniqueId(), letCommandData);
@@ -44,14 +49,6 @@ public class LetCommand implements CommandExecutor {
         }
 
         return CommandResult.success();
-    }
-
-    public static <E extends Extent> Predicate<BlockRayHit<E>> signFilter() {
-        return lastHit -> isSign(lastHit.getExtent().getBlockType(lastHit.getBlockX(), lastHit.getBlockY(), lastHit.getBlockZ()));
-    }
-
-    public static boolean isSign(BlockType type) {
-        return type == BlockTypes.STANDING_SIGN || type == BlockTypes.WALL_SIGN;
     }
 
     public static class LetCommandData {
