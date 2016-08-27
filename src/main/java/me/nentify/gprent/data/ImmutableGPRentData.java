@@ -1,20 +1,19 @@
-package me.nentify.gprent.data.rent;
+package me.nentify.gprent.data;
 
-import me.nentify.gprent.data.GPRentKeys;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.manipulator.immutable.common.AbstractImmutableData;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 
-public class ImmutableRentData extends AbstractImmutableData<ImmutableRentData, RentData> {
+public class ImmutableGPRentData extends AbstractImmutableData<ImmutableGPRentData, GPRentData> {
 
     private String claimId;
 
-    public ImmutableRentData() {
+    public ImmutableGPRentData() {
         this("");
     }
 
-    public ImmutableRentData(String claimId) {
+    public ImmutableGPRentData(String claimId) {
         this.claimId = claimId;
     }
 
@@ -29,12 +28,12 @@ public class ImmutableRentData extends AbstractImmutableData<ImmutableRentData, 
     }
 
     @Override
-    public RentData asMutable() {
-        return new RentData(claimId);
+    public GPRentData asMutable() {
+        return new GPRentData(claimId);
     }
 
     @Override
-    public int compareTo(ImmutableRentData o) {
+    public int compareTo(ImmutableGPRentData o) {
         return 0;
     }
 

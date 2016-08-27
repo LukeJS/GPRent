@@ -1,7 +1,6 @@
-package me.nentify.gprent.data.rent;
+package me.nentify.gprent.data;
 
 import com.google.common.base.Objects;
-import me.nentify.gprent.data.GPRentKeys;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
@@ -11,15 +10,15 @@ import org.spongepowered.api.data.value.mutable.Value;
 
 import java.util.Optional;
 
-public class RentData extends AbstractData<RentData, ImmutableRentData> {
+public class GPRentData extends AbstractData<GPRentData, ImmutableGPRentData> {
 
     private String claimId;
 
-    public RentData() {
+    public GPRentData() {
         this("");
     }
 
-    public RentData(String claimId) {
+    public GPRentData(String claimId) {
         this.claimId = claimId;
     }
 
@@ -35,12 +34,12 @@ public class RentData extends AbstractData<RentData, ImmutableRentData> {
     }
 
     @Override
-    public Optional<RentData> fill(DataHolder dataHolder, MergeFunction overlap) {
+    public Optional<GPRentData> fill(DataHolder dataHolder, MergeFunction overlap) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<RentData> from(DataContainer container) {
+    public Optional<GPRentData> from(DataContainer container) {
         if (!container.contains(GPRentKeys.CLAIM_ID.getQuery()))
             return Optional.empty();
 
@@ -50,17 +49,17 @@ public class RentData extends AbstractData<RentData, ImmutableRentData> {
     }
 
     @Override
-    public RentData copy() {
-        return new RentData(claimId);
+    public GPRentData copy() {
+        return new GPRentData(claimId);
     }
 
     @Override
-    public ImmutableRentData asImmutable() {
-        return new ImmutableRentData(claimId);
+    public ImmutableGPRentData asImmutable() {
+        return new ImmutableGPRentData(claimId);
     }
 
     @Override
-    public int compareTo(RentData o) {
+    public int compareTo(GPRentData o) {
         return 0;
     }
 

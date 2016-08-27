@@ -1,6 +1,7 @@
 package me.nentify.gprent.commands;
 
 import me.nentify.gprent.GPRent;
+import me.nentify.gprent.GPRentType;
 import me.ryanhamshire.griefprevention.GriefPrevention;
 import me.ryanhamshire.griefprevention.claim.Claim;
 import org.spongepowered.api.command.CommandException;
@@ -12,10 +13,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-public class LetCommand implements CommandExecutor {
+public class GPRentCommand implements CommandExecutor {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        GPRentType type = args.<GPRentType>getOne("type").get();
         double price = args.<Double>getOne("price").get();
         int duration = args.<Integer>getOne("duration").get();
         String name = args.<String>getOne("name").get();
@@ -31,8 +33,8 @@ public class LetCommand implements CommandExecutor {
             }
 
             if (!claim.isWildernessClaim()) {
-                Data letCommandData = new Data(claim, name, price, duration);
-                GPRent.addLetcommandData(player.getUniqueId(), letCommandData);
+                Data gprentData = new Data(type, claim, name, price, duration);
+                GPRent.addGPRentCommandData(player.getUniqueId(), gprentData);
 
                 player.sendMessage(Text.of(TextColors.YELLOW, "Right click the sign you would like to display the rent data on"));
             } else {
@@ -46,12 +48,14 @@ public class LetCommand implements CommandExecutor {
     }
 
     public static class Data {
+        public final GPRentType type;
         public final Claim claim;
         public final String name;
         public final double price;
         public final int duration;
 
-        public Data(Claim claim, String name, double price, int duration) {
+        public Data(GPRentType type, Claim claim, String name, double price, int duration) {
+            this.type = type;
             this.claim = claim;
             this.name = name;
             this.price = price;

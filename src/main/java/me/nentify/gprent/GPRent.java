@@ -4,10 +4,10 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import me.nentify.gprent.claims.RentableClaim;
 import me.nentify.gprent.claims.RentableClaims;
-import me.nentify.gprent.commands.LetCommand;
-import me.nentify.gprent.data.rent.ImmutableRentData;
-import me.nentify.gprent.data.rent.RentData;
-import me.nentify.gprent.data.rent.RentDataManipulatorBuilder;
+import me.nentify.gprent.commands.GPRentCommand;
+import me.nentify.gprent.data.ImmutableGPRentData;
+import me.nentify.gprent.data.GPRentData;
+import me.nentify.gprent.data.GPRentDataManipulatorBuilder;
 import me.nentify.gprent.events.BlockEventHandler;
 import me.nentify.gprent.tasks.RentCheckerTask;
 import me.ryanhamshire.griefprevention.GriefPrevention;
@@ -67,7 +67,7 @@ public class GPRent {
     public EconomyService economyService;
 
     // Stores rent data after a player uses the /gprent command to be later put on to a sign placed by the player
-    public static Map<UUID, LetCommand.Data> letCommandData = new HashMap<>();
+    public static Map<UUID, GPRentCommand.Data> gprentCommandData = new HashMap<>();
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
@@ -80,22 +80,21 @@ public class GPRent {
             e.printStackTrace();
         }
 
-        // Make this /gp let|sell
-
-        CommandSpec letCommand = CommandSpec.builder()
+        CommandSpec gprentCommand = CommandSpec.builder()
                 .description(Text.of("Put the region you're standing in up for rent"))
-                .permission("gprent.let")
+                .permission("gprent.create")
                 .arguments(
+                        GenericArguments.enumValue(Text.of("type"), GPRentType.class),
                         GenericArguments.doubleNum(Text.of("price")),
                         GenericArguments.integer(Text.of("duration")),
                         GenericArguments.remainingJoinedStrings(Text.of("name"))
                 )
-                .executor(new LetCommand())
+                .executor(new GPRentCommand())
                 .build();
 
-        Sponge.getCommandManager().register(this, letCommand, "let");
+        Sponge.getCommandManager().register(this, gprentCommand, "gprent");
 
-        Sponge.getDataManager().register(RentData.class, ImmutableRentData.class, new RentDataManipulatorBuilder());
+        Sponge.getDataManager().register(GPRentData.class, ImmutableGPRentData.class, new GPRentDataManipulatorBuilder());
 
         Sponge.getGame().getEventManager().registerListeners(this, new BlockEventHandler());
 
@@ -213,14 +212,14 @@ public class GPRent {
         }
     }
 
-    public static void addLetcommandData(UUID uuid, LetCommand.Data data) {
-        letCommandData.put(uuid, data);
+    public static void addGPRentCommandData(UUID uuid, GPRentCommand.Data data) {
+        gprentCommandData.put(uuid, data);
     }
 
-    public static Optional<LetCommand.Data> takePlayerShopData(UUID uuid) {
-        if (letCommandData.containsKey(uuid)) {
-            LetCommand.Data data = letCommandData.get(uuid);
-            letCommandData.remove(uuid);
+    public static Optional<GPRentCommand.Data> takeGPRentCommandData(UUID uuid) {
+        if (gprentCommandData.containsKey(uuid)) {
+            GPRentCommand.Data data = gprentCommandData.get(uuid);
+            gprentCommandData.remove(uuid);
             return Optional.of(data);
         }
 
