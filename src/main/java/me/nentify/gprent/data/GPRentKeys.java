@@ -7,5 +7,6 @@ import org.spongepowered.api.data.value.mutable.Value;
 
 public class GPRentKeys {
 
+    public static final Key<Value<String>> GPRENT_TYPE = KeyFactory.makeSingleKey(String.class, Value.class, DataQuery.of("GPRentType"));
     public static final Key<Value<String>> CLAIM_ID = KeyFactory.makeSingleKey(String.class, Value.class, DataQuery.of("ClaimId"));
 }

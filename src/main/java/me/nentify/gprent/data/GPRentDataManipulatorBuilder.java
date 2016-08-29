@@ -1,5 +1,6 @@
 package me.nentify.gprent.data;
 
+import me.nentify.gprent.GPRentType;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
@@ -21,9 +22,10 @@ public class GPRentDataManipulatorBuilder implements DataManipulatorBuilder<GPRe
 
     @Override
     public Optional<GPRentData> build(DataView container) throws InvalidDataException {
-        if (container.contains(GPRentKeys.CLAIM_ID)) {
+        if (container.contains(GPRentKeys.CLAIM_ID, GPRentKeys.GPRENT_TYPE)) {
+            GPRentType type = GPRentType.valueOf(container.getString(GPRentKeys.GPRENT_TYPE.getQuery()).get());
             String claimId = container.getString(GPRentKeys.CLAIM_ID.getQuery()).get();
-            return Optional.of(new GPRentData(claimId));
+            return Optional.of(new GPRentData(type, claimId));
         }
 
         return Optional.empty();
